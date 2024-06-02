@@ -8,4 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ExtendWith(RandomBeansExtension.class)
-public class AbstractIntegrationTest {}
+public class AbstractIntegrationTest {
+
+    protected static final String BASE_URl = "/api/v1";
+}
