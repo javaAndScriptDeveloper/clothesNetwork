@@ -21,4 +21,6 @@ public class User {
     String email;
 
     List<Image> profileImages;
+
+    List<Long> brandIds;
 }

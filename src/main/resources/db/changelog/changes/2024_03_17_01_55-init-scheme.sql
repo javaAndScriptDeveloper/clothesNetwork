@@ -1,17 +1,25 @@
 CREATE TABLE users
 (
-    id                  BIGSERIAL   PRIMARY KEY,
-    username            VARCHAR     NOT NULL,
-    phone_number        VARCHAR     NOT NULL,
-    email               VARCHAR     NOT NULL
+    id           BIGSERIAL PRIMARY KEY,
+    username     VARCHAR NOT NULL,
+    password     VARCHAR NOT NULL,
+    phone_number VARCHAR NOT NULL,
+    email        VARCHAR NOT NULL
+);
+
+CREATE TABLE users_permissions
+(
+    user_id         BIGINT      NOT NULL,
+    permission      VARCHAR     NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users (id)
 );
 
 CREATE TABLE images
 (
-    id                  BIGSERIAL   PRIMARY KEY,
-    data                TEXT        NOT NULL,
-    user_id             BIGINT      NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    id      BIGSERIAL PRIMARY KEY,
+    data    TEXT   NOT NULL,
+    user_id BIGINT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users (id)
 );
 
 CREATE TABLE brands
@@ -23,11 +31,11 @@ CREATE TABLE brands
 
 CREATE TABLE invites
 (
-    id          UUID PRIMARY KEY,
-    url         VARCHAR NOT NULL,
-    brand_id    BIGINT NOT NULL,
-    used        BOOLEAN NOT NULL,
-    FOREIGN KEY (brand_id) REFERENCES brands(id)
+    id       UUID PRIMARY KEY,
+    url      VARCHAR NOT NULL,
+    brand_id BIGINT  NOT NULL,
+    used     BOOLEAN NOT NULL,
+    FOREIGN KEY (brand_id) REFERENCES brands (id)
 );
 
 CREATE TABLE users_brands
@@ -35,13 +43,27 @@ CREATE TABLE users_brands
     user_id  BIGINT NOT NULL,
     brand_id BIGINT NOT NULL,
     PRIMARY KEY (user_id, brand_id),
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (brand_id) REFERENCES brands(id)
+    FOREIGN KEY (user_id) REFERENCES users (id),
+    FOREIGN KEY (brand_id) REFERENCES brands (id)
 );
 
 INSERT INTO brands(name, enabled)
 VALUES ('smth', true);
 
+INSERT INTO users(username, password, phone_number, email)
+VALUES (
+        'user',
+        'password',
+        '044',
+        'gmail'
+       );
+
+INSERT INTO users_permissions(user_id, permission)
+VALUES (
+        1, 'BO_READ'
+       );
+
+INSERT INTO users_brands(user_id, brand_id) VALUES (1, 1);
 
 /*
 

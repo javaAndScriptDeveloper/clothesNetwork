@@ -1,9 +1,11 @@
 package com.example.company.service.impl;
 
 import com.example.company.entity.InviteEntity;
+import com.example.company.exception.BrandNotFoundException;
 import com.example.company.repository.BrandRepository;
 import com.example.company.repository.InviteRepository;
 import com.example.company.service.InviteService;
+import com.example.company.service.SecurityService;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class InviteServiceImpl implements InviteService {
 
+    private final SecurityService securityService;
     private final InviteRepository inviteRepository;
     private final BrandRepository brandRepository;
 
@@ -29,7 +32,8 @@ public class InviteServiceImpl implements InviteService {
     @Transactional
     public List<String> generateInviteUrls(Integer size) {
 
-        var brand = brandRepository.findAll().getFirst(); // TODO Get brand from token
+        var brandId = securityService.getCurrentUser().getBrandIds().getFirst();
+        var brandEntity = brandRepository.findById(brandId).orElseThrow(() -> new BrandNotFoundException(brandId));
 
         var inviteUrls = new ArrayList<String>();
         var inviteEntities = new ArrayList<InviteEntity>();
@@ -40,7 +44,8 @@ public class InviteServiceImpl implements InviteService {
             var inviteEntity = InviteEntity.builder()
                     .id(secretCode)
                     .url(inviteUrl)
-                    .brand(brand)
+                    .brand(brandEntity)
+                    .used(false)
                     .build();
             inviteEntities.add(inviteEntity);
         }
