@@ -38,7 +38,25 @@ CREATE TABLE invites
     FOREIGN KEY (brand_id) REFERENCES brands (id)
 );
 
-CREATE TABLE users_brands
+CREATE TABLE users_brands_subscriptions
+(
+    user_id  BIGINT NOT NULL,
+    brand_id BIGINT NOT NULL,
+    PRIMARY KEY (user_id, brand_id),
+    FOREIGN KEY (user_id) REFERENCES users (id),
+    FOREIGN KEY (brand_id) REFERENCES brands (id)
+);
+
+CREATE TABLE users_brands_affiliation
+(
+    user_id  BIGINT NOT NULL,
+    brand_id BIGINT NOT NULL,
+    PRIMARY KEY (user_id, brand_id),
+    FOREIGN KEY (user_id) REFERENCES users (id),
+    FOREIGN KEY (brand_id) REFERENCES brands (id)
+);
+
+CREATE TABLE users_brands_management
 (
     user_id  BIGINT NOT NULL,
     brand_id BIGINT NOT NULL,
@@ -63,7 +81,10 @@ VALUES (
         1, 'BO_READ'
        );
 
-INSERT INTO users_brands(user_id, brand_id) VALUES (1, 1);
+INSERT INTO users_brands_subscriptions(user_id, brand_id) VALUES (1, 1);
+INSERT INTO users_brands_affiliation(user_id, brand_id) VALUES (1, 1);
+INSERT INTO users_brands_management(user_id, brand_id) VALUES (1, 1);
+
 
 /*
 

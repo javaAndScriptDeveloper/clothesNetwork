@@ -1,10 +1,8 @@
 package com.example.company.service.impl;
 
-import com.example.company.entity.BrandEntity;
 import com.example.company.mapper.UserDetailsMapper;
 import com.example.company.model.UserDetailsEnhanced;
 import com.example.company.repository.UserRepository;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -26,8 +24,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .orElseThrow(
                         () -> new UsernameNotFoundException("User by username '%s' not found".formatted(username)));
         var userDetails = userDetailsMapper.toUserDetails(userEntity);
-        userDetails.setBrandIds(
-                userEntity.getBrands().stream().map(BrandEntity::getId).collect(Collectors.toList()));
+        userDetails.setManagedBrandId(userEntity.getManagedBrand().getId());
         return userDetails;
     }
 }

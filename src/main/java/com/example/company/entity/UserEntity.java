@@ -36,12 +36,26 @@ public class UserEntity {
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     List<ImageEntity> profileImages;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinTable(
-            name = "users_brands",
+            name = "users_brands_management",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "brand_id"))
-    List<BrandEntity> brands;
+    BrandEntity managedBrand;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "users_brands_affiliation",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "brand_id"))
+    List<BrandEntity> affiliatedBrands;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "users_brands_subscriptions",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "brand_id"))
+    List<BrandEntity> subscribedBrands;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "users_permissions", joinColumns = @JoinColumn(name = "user_id"))

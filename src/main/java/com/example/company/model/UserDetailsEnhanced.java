@@ -1,7 +1,6 @@
 package com.example.company.model;
 
 import java.util.Collection;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
@@ -26,7 +25,7 @@ public class UserDetailsEnhanced implements UserDetails {
 
     boolean enabled;
 
-    List<Long> brandIds;
+    Long managedBrandId;
 
     Collection<? extends GrantedAuthority> authorities;
 }

@@ -32,7 +32,7 @@ public class InviteServiceImpl implements InviteService {
     @Transactional
     public List<String> generateInviteUrls(Integer size) {
 
-        var brandId = securityService.getCurrentUser().getBrandIds().getFirst();
+        var brandId = securityService.getCurrentUser().getManagedBrandId();
         var brandEntity = brandRepository.findById(brandId).orElseThrow(() -> new BrandNotFoundException(brandId));
 
         var inviteUrls = new ArrayList<String>();

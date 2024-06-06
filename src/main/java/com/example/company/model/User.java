@@ -22,5 +22,9 @@ public class User {
 
     List<Image> profileImages;
 
-    List<Long> brandIds;
+    List<Long> subscribedBrandIds;
+
+    List<Long> affiliatedBrandIds;
+
+    Long managedBrandId;
 }

@@ -32,21 +32,9 @@ dependencies {
     implementation ("org.mapstruct:mapstruct:1.5.5.Final")
     implementation ("org.liquibase:liquibase-core")
     implementation ("io.github.openfeign:feign-core:13.2.1")
-    // https://mvnrepository.com/artifact/com.google.zxing/core
     implementation("com.google.zxing:core:3.5.3")
-    // https://mvnrepository.com/artifact/com.google.zxing/javase
     implementation("com.google.zxing:javase:3.5.3")
-    // https://mvnrepository.com/artifact/com.itextpdf/itextpdf
     implementation("com.itextpdf:itextpdf:5.5.13.3")
-    // https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on
-    implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
-    // https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api
-    implementation("io.jsonwebtoken:jjwt-api:0.12.5")
-    // https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-impl
-    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.5")
-    // https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-jackson
-    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.5")
-
 
     runtimeOnly ("org.postgresql:postgresql")
     testCompileOnly ("org.projectlombok:lombok:1.18.32")

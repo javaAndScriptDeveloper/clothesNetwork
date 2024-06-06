@@ -24,6 +24,12 @@ public class BrandEntity {
     @Column(name = "enabled", nullable = false)
     Boolean enabled;
 
-    @ManyToMany(mappedBy = "brands")
-    List<UserEntity> users;
+    @OneToMany(mappedBy = "managedBrand")
+    List<UserEntity> managingUsers;
+
+    @ManyToMany(mappedBy = "subscribedBrands")
+    List<UserEntity> followingUsers;
+
+    @ManyToMany(mappedBy = "affiliatedBrands")
+    List<UserEntity> affiliatedUsers;
 }
