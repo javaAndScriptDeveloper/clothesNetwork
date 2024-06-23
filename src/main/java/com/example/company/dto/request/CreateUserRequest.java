@@ -1,22 +1,24 @@
 package com.example.company.dto.request;
 
-import com.example.company.model.Image;
+import com.example.company.dto.ImageDto;
 import java.util.List;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Data
 @Builder
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CreateUserRequest {
 
     String username;
 
     String phoneNumber;
 
+    String password;
+
     String email;
 
-    List<Image> profileImages;
+    List<ImageDto> profileImages;
 }

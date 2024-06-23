@@ -24,12 +24,18 @@ public class BrandEntity {
     @Column(name = "enabled", nullable = false)
     Boolean enabled;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "managedBrand")
     List<UserEntity> managingUsers;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "subscribedBrands")
-    List<UserEntity> followingUsers;
+    List<UserEntity> followers;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "affiliatedBrands")
     List<UserEntity> affiliatedUsers;
 }

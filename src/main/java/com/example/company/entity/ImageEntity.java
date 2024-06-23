@@ -3,6 +3,8 @@ package com.example.company.entity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
 @Data
@@ -12,13 +14,15 @@ import lombok.experimental.FieldDefaults;
 public class ImageEntity {
 
     @Id
-    private Long id;
+    Long id;
 
     @Lob
     @Column(name = "data", nullable = false)
-    private byte[] data;
+    byte[] data;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user;
+    UserEntity user;
 }

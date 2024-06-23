@@ -1,6 +1,6 @@
 package com.example.company.dto.request;
 
-import com.example.company.enums.InviteFormatType;
+import com.example.company.enums.AuthorType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -9,8 +9,11 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CreateInvitesRequest {
+public class CreatePostRequest {
 
-    InviteFormatType inviteFormatType;
-    Integer size;
+    AuthorType authorType;
+
+    Long authorId;
+
+    String textContent;
 }

@@ -10,4 +10,6 @@ public interface UserService {
     boolean create(User user, UUID secretCode);
 
     void update(User user);
+
+    void addBrand(Long userId, Long brandId);
 }

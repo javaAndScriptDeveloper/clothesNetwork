@@ -1,4 +1,4 @@
-package com.example.company.dto.response;
+package com.example.company.dto;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,7 +8,8 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class InvitesResponse<T> {
+public class ImageDto {
 
-    T payload;
+    Long id;
+    byte[] data;
 }

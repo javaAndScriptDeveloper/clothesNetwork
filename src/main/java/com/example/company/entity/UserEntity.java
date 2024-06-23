@@ -33,9 +33,28 @@ public class UserEntity {
     @Column(name = "email")
     String email;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     List<ImageEntity> profileImages;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "feed_id")
+    FeedEntity feed;
+
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @ManyToMany
+    @JoinTable(
+            name = "users_followers",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "follower_id"))
+    List<UserEntity> followers;
+
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToOne
     @JoinTable(
             name = "users_brands_management",
@@ -43,6 +62,8 @@ public class UserEntity {
             inverseJoinColumns = @JoinColumn(name = "brand_id"))
     BrandEntity managedBrand;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_brands_affiliation",
@@ -50,6 +71,8 @@ public class UserEntity {
             inverseJoinColumns = @JoinColumn(name = "brand_id"))
     List<BrandEntity> affiliatedBrands;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_brands_subscriptions",
@@ -57,6 +80,8 @@ public class UserEntity {
             inverseJoinColumns = @JoinColumn(name = "brand_id"))
     List<BrandEntity> subscribedBrands;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "users_permissions", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)

@@ -1,7 +1,7 @@
 package com.example.company.dto.response;
 
-import com.example.company.model.Image;
-import java.util.List;
+import com.example.company.enums.AuthorType;
+import java.util.UUID;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -10,13 +10,13 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserResponse {
+public class PostResponse {
 
-    String username;
+    UUID id;
 
-    String phoneNumber;
+    AuthorType authorType;
 
-    String email;
+    Long authorId;
 
-    List<Image> profileImages;
+    String textContent;
 }

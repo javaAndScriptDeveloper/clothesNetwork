@@ -2,6 +2,8 @@ package com.example.company.service.impl;
 
 import com.example.company.entity.InviteEntity;
 import com.example.company.exception.BrandNotFoundException;
+import com.example.company.exception.InviteNotFoundException;
+import com.example.company.model.Invite;
 import com.example.company.repository.BrandRepository;
 import com.example.company.repository.InviteRepository;
 import com.example.company.service.InviteService;
@@ -69,6 +71,12 @@ public class InviteServiceImpl implements InviteService {
         inviteEntity.setUsed(true);
         inviteRepository.save(inviteEntity);
         return true;
+    }
+
+    @Override
+    public Invite findByIdOrThrowNotFound(UUID id) {
+        var inviteEntity = inviteRepository.findById(id).orElseThrow(() -> new InviteNotFoundException(id));
+        return Invite.builder().brandId(inviteEntity.getBrand().getId()).build();
     }
 
     private String generateInviteUrl(String secretCode) {

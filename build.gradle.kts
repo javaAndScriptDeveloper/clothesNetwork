@@ -42,6 +42,7 @@ dependencies {
     testAnnotationProcessor ("org.projectlombok:lombok:1.18.32")
 
     testImplementation ("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.security:spring-security-test:6.3.1")
     testImplementation ("io.github.glytching:junit-extensions:2.6.0")
     testImplementation("io.rest-assured:spring-mock-mvc:5.4.0")
     testImplementation (files("src/test/resources"))

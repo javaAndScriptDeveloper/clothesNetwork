@@ -1,5 +1,6 @@
 package com.example.company.service.impl;
 
+import com.example.company.enums.Permission;
 import com.example.company.mapper.UserDetailsMapper;
 import com.example.company.model.UserDetailsEnhanced;
 import com.example.company.repository.UserRepository;
@@ -24,7 +25,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .orElseThrow(
                         () -> new UsernameNotFoundException("User by username '%s' not found".formatted(username)));
         var userDetails = userDetailsMapper.toUserDetails(userEntity);
-        userDetails.setManagedBrandId(userEntity.getManagedBrand().getId());
+        if (userEntity.getPermissions().contains(Permission.BO_READ)) {
+            userDetails.setManagedBrandId(userEntity.getManagedBrand().getId());
+        }
         return userDetails;
     }
 }

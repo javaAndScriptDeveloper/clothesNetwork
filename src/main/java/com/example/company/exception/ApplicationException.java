@@ -25,7 +25,7 @@ public class ApplicationException extends RuntimeException {
         this.internalException = Optional.empty();
     }
 
-    ApplicationException(HttpStatus httpStatus, String errorMessage) {
+    public ApplicationException(HttpStatus httpStatus, String errorMessage) {
         this.httpStatus = httpStatus;
         this.errorMessage = Optional.of(errorMessage);
         this.internalException = Optional.empty();

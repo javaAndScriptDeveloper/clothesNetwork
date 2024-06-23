@@ -1,23 +1,20 @@
 package com.example.company.security;
 
+import com.example.company.exception.InvalidCredentialsException;
+import com.example.company.utils.StringUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import lombok.Builder;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-@Component
-@RequiredArgsConstructor
+@Builder
 public class AuthFilter extends OncePerRequestFilter {
 
     private static final String BASIC_AUTH_SCHEME_NAME = "Basic";
@@ -31,6 +28,7 @@ public class AuthFilter extends OncePerRequestFilter {
         var authorizationHeaderValue = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if (!authHeaderValueValid(authorizationHeaderValue)) {
+            chain.doFilter(request, response);
             return;
         }
 
@@ -53,9 +51,11 @@ public class AuthFilter extends OncePerRequestFilter {
 
     private static Credentials resolveCredentials(String authorizationHeaderValue) {
         var base64Credentials = authorizationHeaderValue.substring(6);
-        var decodedBytes = Base64.getDecoder().decode(base64Credentials);
-        var decodedCredentials = new String(decodedBytes, StandardCharsets.UTF_8);
+        var decodedCredentials = StringUtils.decodeBase64(base64Credentials);
         var credentialsArray = decodedCredentials.split(":", 2);
+        if (credentialsArray.length != 2) {
+            throw new InvalidCredentialsException();
+        }
         return Credentials.builder()
                 .username(credentialsArray[0])
                 .password(credentialsArray[1])

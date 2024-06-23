@@ -4,20 +4,14 @@ CREATE TABLE users
     username     VARCHAR NOT NULL,
     password     VARCHAR NOT NULL,
     phone_number VARCHAR NOT NULL,
-    email        VARCHAR NOT NULL
-);
-
-CREATE TABLE users_permissions
-(
-    user_id         BIGINT      NOT NULL,
-    permission      VARCHAR     NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users (id)
+    email        VARCHAR NOT NULL,
+    feed_id      UUID    NULL
 );
 
 CREATE TABLE images
 (
     id      BIGSERIAL PRIMARY KEY,
-    data    TEXT   NOT NULL,
+    data    OID    NOT NULL,
     user_id BIGINT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users (id)
 );
@@ -31,11 +25,56 @@ CREATE TABLE brands
 
 CREATE TABLE invites
 (
-    id       UUID PRIMARY KEY,
-    url      VARCHAR NOT NULL,
-    brand_id BIGINT  NOT NULL,
-    used     BOOLEAN NOT NULL,
+    id         UUID PRIMARY KEY,
+    url        VARCHAR   NOT NULL,
+    brand_id   BIGINT    NOT NULL,
+    used       BOOLEAN   NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL,
     FOREIGN KEY (brand_id) REFERENCES brands (id)
+);
+
+CREATE TABLE posts
+(
+    id           UUID PRIMARY KEY,
+    user_id      BIGINT    NULL,
+    brand_id     BIGINT    NULL,
+    author_type  VARCHAR   NOT NULL,
+    text_content VARCHAR   NOT NULL,
+    created_at   TIMESTAMP NOT NULL,
+    updated_at   TIMESTAMP NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users (id),
+    FOREIGN KEY (brand_id) REFERENCES brands (id)
+);
+
+CREATE TABLE feeds
+(
+    id UUID PRIMARY KEY
+);
+
+CREATE TABLE feeds_posts
+(
+    feed_id UUID NOT NULL,
+    post_id uuid NOT NULL,
+    PRIMARY KEY (feed_id, post_id),
+    FOREIGN KEY (feed_id) REFERENCES feeds (id),
+    FOREIGN KEY (post_id) REFERENCES posts (id)
+);
+
+CREATE TABLE users_permissions
+(
+    user_id    BIGINT  NOT NULL,
+    permission VARCHAR NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users (id)
+);
+
+CREATE TABLE users_followers
+(
+    user_id     BIGINT NOT NULL,
+    follower_id BIGINT NOT NULL,
+    PRIMARY KEY (user_id, follower_id),
+    FOREIGN KEY (user_id) REFERENCES users (id),
+    FOREIGN KEY (follower_id) REFERENCES users (id)
 );
 
 CREATE TABLE users_brands_subscriptions
@@ -64,44 +103,3 @@ CREATE TABLE users_brands_management
     FOREIGN KEY (user_id) REFERENCES users (id),
     FOREIGN KEY (brand_id) REFERENCES brands (id)
 );
-
-INSERT INTO brands(name, enabled)
-VALUES ('smth', true);
-
-INSERT INTO users(username, password, phone_number, email)
-VALUES (
-        'user',
-        'password',
-        '044',
-        'gmail'
-       );
-
-INSERT INTO users_permissions(user_id, permission)
-VALUES (
-        1, 'BO_READ'
-       );
-
-INSERT INTO users_brands_subscriptions(user_id, brand_id) VALUES (1, 1);
-INSERT INTO users_brands_affiliation(user_id, brand_id) VALUES (1, 1);
-INSERT INTO users_brands_management(user_id, brand_id) VALUES (1, 1);
-
-
-/*
-
-CREATE TABLE chats
-(
-    id             BIGSERIAL PRIMARY KEY,
-    main_user_id   BIGINT REFERENCES users (id) NOT NULL,
-    participant_id BIGINT REFERENCES users (id) NOT NULL
-);
-
-CREATE TABLE messages
-(
-    id          BIGSERIAL PRIMARY KEY,
-    receiver_id BIGINT REFERENCES users (id),
-    sender_id   BIGINT REFERENCES users (id),
-    chat_id     BIGINT REFERENCES chats(id),
-    text        VARCHAR NOT NULL
-);
-
- */

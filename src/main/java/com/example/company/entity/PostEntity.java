@@ -1,7 +1,9 @@
 package com.example.company.entity;
 
+import com.example.company.enums.AuthorType;
 import jakarta.persistence.*;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -13,18 +15,28 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "invites")
+@Table(name = "posts")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class InviteEntity {
+public class PostEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     UUID id;
 
-    @Column(nullable = false)
-    String url;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    UserEntity userAuthor;
 
-    @Column(nullable = false)
-    Boolean used;
+    @ManyToOne
+    @JoinColumn(name = "brand_id")
+    BrandEntity brandAuthor;
+
+    @Column(name = "author_type")
+    @Enumerated(EnumType.STRING)
+    AuthorType authorType;
+
+    @Column(name = "text_content")
+    String textContent;
 
     @CreationTimestamp
     Instant createdAt;
@@ -34,7 +46,6 @@ public class InviteEntity {
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @ManyToOne
-    @JoinColumn(name = "brand_id", nullable = false)
-    BrandEntity brand;
+    @ManyToMany(mappedBy = "posts")
+    List<FeedEntity> feeds;
 }
