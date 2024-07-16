@@ -36,13 +36,14 @@ CREATE TABLE invites
 
 CREATE TABLE posts
 (
-    id           UUID PRIMARY KEY,
-    user_id      BIGINT    NULL,
-    brand_id     BIGINT    NULL,
-    author_type  VARCHAR   NOT NULL,
-    text_content VARCHAR   NOT NULL,
-    created_at   TIMESTAMP NOT NULL,
-    updated_at   TIMESTAMP NOT NULL,
+    id              UUID PRIMARY KEY,
+    user_id         BIGINT    NULL,
+    brand_id        BIGINT    NULL,
+    author_type     VARCHAR   NOT NULL,
+    text_content    VARCHAR   NOT NULL,
+    created_at      TIMESTAMP NOT NULL,
+    updated_at      TIMESTAMP NOT NULL,
+    view_conditions JSONB     NULL,
     FOREIGN KEY (user_id) REFERENCES users (id),
     FOREIGN KEY (brand_id) REFERENCES brands (id)
 );
@@ -102,4 +103,13 @@ CREATE TABLE users_brands_management
     PRIMARY KEY (user_id, brand_id),
     FOREIGN KEY (user_id) REFERENCES users (id),
     FOREIGN KEY (brand_id) REFERENCES brands (id)
+);
+
+CREATE TABLE users_subscribed
+(
+    user_id       BIGINT NOT NULL,
+    subscribed_id BIGINT NOT NULL,
+    PRIMARY KEY (user_id, subscribed_id),
+    FOREIGN KEY (user_id) REFERENCES users (id),
+    FOREIGN KEY (subscribed_id) REFERENCES users (id)
 );

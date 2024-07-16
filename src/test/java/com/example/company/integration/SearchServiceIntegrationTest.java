@@ -30,9 +30,50 @@ public class SearchServiceIntegrationTest extends AbstractIntegrationTest {
                 .clazz(UserEntity.class)
                 .filteringFields(List.of(SearchRequest.FilteringField.builder()
                         .fieldName("username")
-                        .operator(SearchOperator.EQUAL)
+                        .operator(SearchOperator.EQUALS)
                         .fieldValue(expectedUserEntity.getUsername())
                         .build()))
+                .build());
+
+        // then
+        assertEquals(1, actualUserEntities.size());
+        assertEquals(expectedUserEntity, actualUserEntities.getFirst());
+    }
+
+    @Test
+    void whenSearch_AndRequestIsUserEntity_AndChildEntitiesUsedInSearch_ThenCorrectUserEntityReturned() {
+        // given
+        var followerUserEntity = userRepository.save(generateUserEntity());
+        var expectedUserEntity = userRepository.save(generateUserEntity().toBuilder()
+                .followers(List.of(followerUserEntity))
+                .build());
+
+        userRepository.save(generateUserEntity().toBuilder()
+                .followers(List.of(userRepository.save(generateUserEntity())))
+                .build());
+        userRepository.save(generateUserEntity().toBuilder()
+                .followers(List.of(userRepository.save(generateUserEntity())))
+                .build());
+        userRepository.save(generateUserEntity().toBuilder()
+                .followers(List.of(userRepository.save(generateUserEntity())))
+                .build());
+        userRepository.save(generateUserEntity().toBuilder()
+                .followers(List.of(userRepository.save(generateUserEntity())))
+                .build());
+        // when
+        var actualUserEntities = sut.search(SearchRequest.<UserEntity>builder()
+                .clazz(UserEntity.class)
+                .filteringFields(List.of(
+                        SearchRequest.FilteringField.builder()
+                                .fieldName("username")
+                                .operator(SearchOperator.EQUALS)
+                                .fieldValue(expectedUserEntity.getUsername())
+                                .build(),
+                        SearchRequest.FilteringField.builder()
+                                .fieldName("followers.username")
+                                .operator(SearchOperator.EQUALS)
+                                .fieldValue(followerUserEntity.getUsername())
+                                .build()))
                 .build());
 
         // then

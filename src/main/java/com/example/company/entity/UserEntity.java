@@ -10,10 +10,10 @@ import lombok.experimental.FieldDefaults;
 
 @Data
 @Entity
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
+@Builder(toBuilder = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserEntity {
 
@@ -40,6 +40,11 @@ public class UserEntity {
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
+    @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "userAuthor")
+    List<PostEntity> posts;
+
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "feed_id")
     FeedEntity feed;
@@ -52,6 +57,15 @@ public class UserEntity {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "follower_id"))
     List<UserEntity> followers;
+
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @ManyToMany
+    @JoinTable(
+            name = "users_subscribed",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "subscribed_id"))
+    List<UserEntity> subscribedUsers;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

@@ -1,5 +1,6 @@
-package com.example.company.exception;
+package com.example.company.exception.notfound;
 
+import com.example.company.exception.ApplicationException;
 import org.springframework.http.HttpStatus;
 
 public class FeedNotFoundException extends ApplicationException {

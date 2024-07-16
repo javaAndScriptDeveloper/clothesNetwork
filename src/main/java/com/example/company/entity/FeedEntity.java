@@ -8,7 +8,7 @@ import lombok.experimental.FieldDefaults;
 
 @Data
 @Entity
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "feeds")
