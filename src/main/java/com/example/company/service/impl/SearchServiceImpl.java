@@ -4,10 +4,11 @@ import com.example.company.model.search.SearchRequest;
 import com.example.company.service.SearchService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,21 +24,27 @@ public class SearchServiceImpl implements SearchService {
         var criteriaQuery = criteriaBuilder.createQuery(searchRequest.getClazz());
         var root = criteriaQuery.from(searchRequest.getClazz());
 
-        var predicates = generatePredicates(root, criteriaBuilder, searchRequest.getFilteringFields());
-        predicates.forEach(criteriaQuery::where);
+        var predicate = generatePredicate(root, criteriaBuilder, searchRequest.getFilteringFields());
+        criteriaQuery.where(predicate);
 
         return entityManager.createQuery(criteriaQuery).getResultList();
     }
 
-    <T> List<Predicate> generatePredicates(
+    private <T> Predicate generatePredicate(
             Root<T> root, CriteriaBuilder criteriaBuilder, List<SearchRequest.FilteringField> filteringFields) {
         return filteringFields.stream()
                 .map(filteringField -> {
-                    var path = root.get(filteringField.getFieldName());
+                    var path = generatePath(root, filteringField);
                     return switch (filteringField.getOperator()) {
-                        case EQUAL -> criteriaBuilder.equal(path, filteringField.getFieldValue());
+                        case EQUALS -> criteriaBuilder.equal(path, filteringField.getFieldValue());
                     };
                 })
-                .collect(Collectors.toList());
+                .reduce(criteriaBuilder::and)
+                .orElse(criteriaBuilder.conjunction());
+    }
+
+    private <T> Path<?> generatePath(Root<T> root, SearchRequest.FilteringField filteringField) {
+        var fieldName = filteringField.getFieldName();
+        return Arrays.stream(fieldName.split("\\.")).reduce((Path<?>) root, Path::get, (p1, p2) -> p1);
     }
 }

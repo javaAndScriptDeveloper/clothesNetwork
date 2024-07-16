@@ -1,7 +1,7 @@
 package com.example.company.repository;
 
 import com.example.company.entity.UserEntity;
-import com.example.company.exception.UserNotFoundException;
+import com.example.company.exception.notfound.UserNotFoundException;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 

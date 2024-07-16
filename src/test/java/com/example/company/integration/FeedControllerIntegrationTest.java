@@ -24,7 +24,8 @@ public class FeedControllerIntegrationTest extends AbstractIntegrationTest {
     @Test
     @SneakyThrows
     @WithMockUser
-    void whenSearchFeed_ThenFeedReturned(@Random(type = PostEntity.class) List<PostEntity> toSavePostEntities) {
+    void whenSearchFeed_ThenFeedReturned(
+            @Random(type = PostEntity.class, excludes = "viewConditions") List<PostEntity> toSavePostEntities) {
 
         // given
         var toSaveManagedBrandEntity = generateBrandEntity();
@@ -38,9 +39,11 @@ public class FeedControllerIntegrationTest extends AbstractIntegrationTest {
             postEntity.setUserAuthor(null);
             postEntity.setBrandAuthor(null);
             postEntity.setFeeds(List.of());
+            postEntity.setViewConditions(List.of());
         });
 
-        var savedPostEntities = postRepository.saveAll(toSavePostEntities);
+        transactionService.execute(() -> postRepository.saveAll(toSavePostEntities));
+        var savedPostEntities = postRepository.findAll();
         savedPostEntities.sort(Comparator.comparing(PostEntity::getUpdatedAt));
 
         var savedFeedEntity = feedRepository.save(FeedEntity.builder()

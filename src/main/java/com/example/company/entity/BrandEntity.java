@@ -26,6 +26,11 @@ public class BrandEntity {
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
+    @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "brandAuthor")
+    List<PostEntity> posts;
+
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "managedBrand")
     List<UserEntity> managingUsers;
 

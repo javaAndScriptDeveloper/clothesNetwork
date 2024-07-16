@@ -1,9 +1,10 @@
 package com.example.company.model;
 
 import com.example.company.enums.AuthorType;
+import com.example.company.enums.SearchOperator;
+import java.util.List;
 import java.util.UUID;
-import lombok.AccessLevel;
-import lombok.Data;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Data
@@ -11,10 +12,20 @@ import lombok.experimental.FieldDefaults;
 public class Post {
 
     UUID id;
-
     AuthorType authorType;
-
     Long authorId;
-
     String textContent;
+    List<ViewCondition> viewConditions;
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @FieldDefaults(level = AccessLevel.PRIVATE)
+    public static class ViewCondition {
+
+        String fieldName;
+        SearchOperator operator;
+        Object fieldValue;
+    }
 }

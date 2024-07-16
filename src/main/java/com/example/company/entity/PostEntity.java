@@ -1,5 +1,6 @@
 package com.example.company.entity;
 
+import com.example.company.entity.info.ViewConditionInfo;
 import com.example.company.enums.AuthorType;
 import jakarta.persistence.*;
 import java.time.Instant;
@@ -8,14 +9,16 @@ import java.util.UUID;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes;
 
 @Data
 @Entity
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "posts")
+@Builder(toBuilder = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PostEntity {
 
@@ -46,6 +49,10 @@ public class PostEntity {
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @ManyToMany(mappedBy = "posts")
+    @ManyToMany(mappedBy = "posts", cascade = CascadeType.PERSIST)
     List<FeedEntity> feeds;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "view_conditions")
+    List<ViewConditionInfo> viewConditions;
 }

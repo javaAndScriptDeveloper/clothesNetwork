@@ -1,8 +1,8 @@
 package com.example.company.service.impl;
 
 import com.example.company.entity.InviteEntity;
-import com.example.company.exception.BrandNotFoundException;
-import com.example.company.exception.InviteNotFoundException;
+import com.example.company.exception.notfound.BrandNotFoundException;
+import com.example.company.exception.notfound.InviteNotFoundException;
 import com.example.company.model.Invite;
 import com.example.company.repository.BrandRepository;
 import com.example.company.repository.InviteRepository;

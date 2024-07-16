@@ -8,5 +8,6 @@ DELETE FROM users_brands_subscriptions;
 DELETE FROM users_permissions;
 DELETE FROM images;
 DELETE FROM users;
+DELETE FROM users_subscribed;
 DELETE FROM invites;
 DELETE FROM brands;

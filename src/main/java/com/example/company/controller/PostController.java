@@ -3,14 +3,13 @@ package com.example.company.controller;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import com.example.company.dto.request.CreatePostRequest;
+import com.example.company.dto.request.UpdatePostRequest;
 import com.example.company.mapper.dto.PostDtoMapper;
 import com.example.company.service.PostService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Tag(name = "posts")
@@ -24,6 +23,13 @@ public class PostController {
     @PostMapping(consumes = APPLICATION_JSON_VALUE)
     void create(@RequestBody CreatePostRequest createPostRequest) {
         var postModel = postDtoMapper.toModel(createPostRequest);
-        postService.save(postModel);
+        postService.create(postModel);
+    }
+
+    @PutMapping(path = "/{id}", consumes = APPLICATION_JSON_VALUE)
+    void update(@PathVariable UUID id, @RequestBody UpdatePostRequest updatePostRequest) {
+        var postModel = postDtoMapper.toModel(updatePostRequest);
+        postModel.setId(id);
+        postService.update(postModel);
     }
 }

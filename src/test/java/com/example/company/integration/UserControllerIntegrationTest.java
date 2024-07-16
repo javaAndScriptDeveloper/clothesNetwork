@@ -56,7 +56,9 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTest {
                         "followers",
                         "permissions",
                         "managedBrand",
-                        "affiliatedBrands")
+                        "affiliatedBrands",
+                        "subscribedUsers",
+                        "posts")
                 .isEqualTo(OBJECT_MAPPER.readValue(responseContent, UserResponse.class));
     }
 
@@ -136,7 +138,9 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTest {
                         "followers",
                         "permissions",
                         "managedBrand",
-                        "affiliatedBrands")
+                        "affiliatedBrands",
+                        "subscribedUsers",
+                        "posts")
                 .isEqualTo(updateUserRequest);
     }
 

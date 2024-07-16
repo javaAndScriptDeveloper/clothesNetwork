@@ -4,5 +4,7 @@ import com.example.company.model.Post;
 
 public interface PostService {
 
-    void save(Post post);
+    void create(Post post);
+
+    void update(Post post);
 }

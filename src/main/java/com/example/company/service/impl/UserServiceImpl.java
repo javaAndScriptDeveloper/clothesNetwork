@@ -10,6 +10,7 @@ import com.example.company.service.InviteService;
 import com.example.company.service.UserService;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +53,7 @@ public class UserServiceImpl implements UserService {
         toSaveUserEntity.setAffiliatedBrands(List.of(brandEntity));
         toSaveUserEntity.setProfileImages(imageEntityList);
         toSaveUserEntity.setFeed(FeedEntity.builder().build());
+        toSaveUserEntity.setPosts(Collections.emptyList());
 
         var brandAffiliatedUsers = new ArrayList<>(brandEntity.getAffiliatedUsers());
         brandAffiliatedUsers.add(toSaveUserEntity);
