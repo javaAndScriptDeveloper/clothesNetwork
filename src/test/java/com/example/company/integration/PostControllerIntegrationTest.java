@@ -11,8 +11,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.example.company.dto.request.CreatePostRequest;
-import com.example.company.dto.request.UpdatePostRequest;
+import com.example.company.dto.post.PostViewCondition;
 import com.example.company.entity.FeedEntity;
 import com.example.company.entity.PostEntity;
 import com.example.company.entity.UserEntity;
@@ -20,6 +19,7 @@ import com.example.company.entity.info.ViewConditionInfo;
 import com.example.company.enums.SearchOperator;
 import io.github.glytching.junit.extension.random.Random;
 import jakarta.transaction.Transactional;
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -35,8 +35,9 @@ public class PostControllerIntegrationTest extends AbstractIntegrationTest {
     @Test
     @SneakyThrows
     @WithMockUser
-    void whenCreatePost_ThenPostCreated(@Random CreatePostRequest createPostRequest) {
+    void whenCreatePost_ThenPostCreated() {
         // given
+        var createPostRequest = generateCreatePostRequest();
         var authorId =
                 switch (createPostRequest.getAuthorType()) {
                     case USER -> userRepository.save(generateUserEntity()).getId();
@@ -56,17 +57,20 @@ public class PostControllerIntegrationTest extends AbstractIntegrationTest {
         var savedPostEntity = postRepository.findAll().getFirst();
         assertThat(savedPostEntity)
                 .usingRecursiveComparison()
-                .ignoringFields("createdAt", "brandAuthor", "feeds", "id", "userAuthor", "updatedAt")
+                .ignoringFields("createdAt", "brandAuthor", "feeds", "id", "userAuthor", "updatedAt", "publicationTime")
                 .isEqualTo(createPostRequest);
+        assertEquals(
+                Instant.ofEpochMilli(createPostRequest.getPublicationTime().getValue()),
+                savedPostEntity.getPublicationTime());
     }
 
     @Test
     @SneakyThrows
     @WithMockUser
     @Transactional
-    void whenUpdatePost_ThenPostUpdated(
-            @Random PostEntity toSaveInitialPostEntity, @Random UpdatePostRequest updatePostRequest) {
+    void whenUpdatePost_ThenPostUpdated(@Random PostEntity toSaveInitialPostEntity) {
         // given
+        var updatePostRequest = generateUpdatePostRequest();
         toSaveInitialPostEntity.setFeeds(List.of());
         switch (toSaveInitialPostEntity.getAuthorType()) {
             case USER -> {
@@ -84,7 +88,6 @@ public class PostControllerIntegrationTest extends AbstractIntegrationTest {
                 updatePostRequest.setAuthorId(brandAuthorEntity.getId());
             }
         }
-        ;
 
         var savedInitialPostEntity = postRepository.save(toSaveInitialPostEntity);
 
@@ -101,8 +104,12 @@ public class PostControllerIntegrationTest extends AbstractIntegrationTest {
         var updatedPostEntity = postRepository.findAll().getFirst();
         assertThat(updatedPostEntity)
                 .usingRecursiveComparison()
-                .ignoringFields("createdAt", "brandAuthor", "feeds", "id", "userAuthor", "updatedAt")
+                .ignoringFields("createdAt", "brandAuthor", "feeds", "id", "userAuthor", "updatedAt", "publicationTime")
                 .isEqualTo(updatePostRequest);
+
+        assertEquals(
+                Instant.ofEpochMilli(updatePostRequest.getPublicationTime().getValue()),
+                updatedPostEntity.getPublicationTime());
     }
 
     @Test
@@ -110,8 +117,9 @@ public class PostControllerIntegrationTest extends AbstractIntegrationTest {
     @WithMockUser
     @Transactional
     void whenCreatePostWithViewConditions_AndAuthorIsUserType_ThenPostCreated_AndExpectedFeedsUpdated(
-            @Random CreatePostRequest createPostRequest, @Random String username) {
+            @Random String username) {
         // given
+        var createPostRequest = generateCreatePostRequest();
         var author = userRepository.save(generateUserEntity());
 
         var usersToReceivePost =
@@ -138,7 +146,7 @@ public class PostControllerIntegrationTest extends AbstractIntegrationTest {
         });
         userRepository.saveAll(usersToSkipPost);
 
-        createPostRequest.setViewConditions(List.of(CreatePostRequest.ViewConditionRequest.builder()
+        createPostRequest.setViewConditions(List.of(PostViewCondition.builder()
                 .fieldName("username")
                 .operator(SearchOperator.EQUALS)
                 .fieldValue(username)
@@ -181,9 +189,10 @@ public class PostControllerIntegrationTest extends AbstractIntegrationTest {
     @WithMockUser
     @Transactional
     void
-            whenUpdatePostWithViewConditions_AndAuthorIsUserType_AndViewConditionAreNotChanged_ThenPostUpdated_AndExpectedFeedsUpdated(
-                    @Random(excludes = "viewConditions") UpdatePostRequest updatePostRequest) {
+            whenUpdatePostWithViewConditions_AndAuthorIsUserType_AndViewConditionAreNotChanged_ThenPostUpdated_AndExpectedFeedsUpdated() {
         // given
+        var updatePostRequest = generateUpdatePostRequest();
+        updatePostRequest.setVisible(true);
         var author = userRepository.save(generateUserEntity());
         var initialPostEntity = postRepository.save(generatePostEntity().toBuilder()
                 .userAuthor(author)
@@ -253,8 +262,9 @@ public class PostControllerIntegrationTest extends AbstractIntegrationTest {
     @Transactional
     void
             whenUpdatePostWithViewConditions_AndAuthorIsUserType_AndViewConditionsAreChanged_ThenPostUpdated_AndExpectedFeedsUpdated(
-                    @Random(excludes = "viewConditions") UpdatePostRequest updatePostRequest, @Random String username) {
+                    @Random String username) {
         // given
+        var updatePostRequest = generateUpdatePostRequest();
         var author = userRepository.save(generateUserEntity());
         var initialPostEntity = postRepository.save(generatePostEntity().toBuilder()
                 .userAuthor(author)
@@ -304,7 +314,7 @@ public class PostControllerIntegrationTest extends AbstractIntegrationTest {
                 })
                 .collect(Collectors.toList()));
 
-        updatePostRequest.setViewConditions(List.of(UpdatePostRequest.ViewConditionRequest.builder()
+        updatePostRequest.setViewConditions(List.of(PostViewCondition.builder()
                 .fieldName("username")
                 .operator(SearchOperator.EQUALS)
                 .fieldValue(username)
@@ -333,8 +343,10 @@ public class PostControllerIntegrationTest extends AbstractIntegrationTest {
     @WithMockUser
     @Transactional
     void whenCreatePostWithViewConditions_AndAuthorIsBrandType_ThenPostCreated_AndExpectedFeedsUpdated(
-            @Random CreatePostRequest createPostRequest, @Random String username) {
+            @Random String username) {
         // given
+        var createPostRequest = generateCreatePostRequest();
+
         var author = brandRepository.save(generateBrandEntity());
 
         var usersToReceivePost =
@@ -361,7 +373,7 @@ public class PostControllerIntegrationTest extends AbstractIntegrationTest {
         });
         userRepository.saveAll(usersToSkipPost);
 
-        createPostRequest.setViewConditions(List.of(CreatePostRequest.ViewConditionRequest.builder()
+        createPostRequest.setViewConditions(List.of(PostViewCondition.builder()
                 .fieldName("username")
                 .operator(SearchOperator.EQUALS)
                 .fieldValue(username)
@@ -401,9 +413,9 @@ public class PostControllerIntegrationTest extends AbstractIntegrationTest {
     @WithMockUser
     @Transactional
     void
-            whenUpdatePostWithViewConditions_AndAuthorIsBrandType_AndViewConditionAreNotChanged_ThenPostUpdated_AndExpectedFeedsUpdated(
-                    @Random(excludes = "viewConditions") UpdatePostRequest updatePostRequest) {
+            whenUpdatePostWithViewConditions_AndAuthorIsBrandType_AndViewConditionAreNotChanged_ThenPostUpdated_AndExpectedFeedsUpdated() {
         // given
+        var updatePostRequest = generateUpdatePostRequest();
         var author = brandRepository.save(generateBrandEntity());
         var initialPostEntity = postRepository.save(generatePostEntity().toBuilder()
                 .brandAuthor(author)
@@ -474,8 +486,9 @@ public class PostControllerIntegrationTest extends AbstractIntegrationTest {
     @Transactional
     void
             whenUpdatePostWithViewConditions_AndAuthorIsBrandType_AndViewConditionsAreChanged_ThenPostUpdated_AndExpectedFeedsUpdated(
-                    @Random(excludes = "viewConditions") UpdatePostRequest updatePostRequest, @Random String username) {
+                    @Random String username) {
         // given
+        var updatePostRequest = generateUpdatePostRequest();
         var author = brandRepository.save(generateBrandEntity());
         var initialPostEntity = postRepository.save(generatePostEntity().toBuilder()
                 .brandAuthor(author)
@@ -525,7 +538,7 @@ public class PostControllerIntegrationTest extends AbstractIntegrationTest {
                 })
                 .collect(Collectors.toList()));
 
-        updatePostRequest.setViewConditions(List.of(UpdatePostRequest.ViewConditionRequest.builder()
+        updatePostRequest.setViewConditions(List.of(PostViewCondition.builder()
                 .fieldName("username")
                 .operator(SearchOperator.EQUALS)
                 .fieldValue(username)

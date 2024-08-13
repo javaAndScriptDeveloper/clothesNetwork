@@ -8,7 +8,7 @@ import com.example.company.entity.info.ViewConditionInfo;
 import com.example.company.enums.AuthorType;
 import com.example.company.enums.SearchOperator;
 import com.example.company.mapper.model.ViewConditionModelMapper;
-import com.example.company.model.Post;
+import com.example.company.model.post.Post;
 import com.example.company.model.search.SearchRequest;
 import com.example.company.repository.BrandRepository;
 import com.example.company.repository.FeedRepository;
@@ -16,12 +16,16 @@ import com.example.company.repository.PostRepository;
 import com.example.company.repository.UserRepository;
 import com.example.company.service.PostService;
 import com.example.company.service.SearchService;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
@@ -44,12 +48,17 @@ public class PostServiceImpl implements PostService {
                         .userAuthor(userEntity)
                         .textContent(post.getTextContent())
                         .viewConditions(viewConditionModelMapper.toEntity(post.getViewConditions()))
+                        .publicationTime(
+                                Instant.ofEpochMilli(post.getPublicationTime().getValue()))
+                        .visible(post.getVisible())
                         .build();
                 var savedPostEntity = postRepository.save(toSavePostEntity);
                 userEntity.getPosts().add(savedPostEntity);
                 userRepository.save(userEntity);
-                var feedEntitiesToSave = generateFeedEntitiesToSave(savedPostEntity, userEntity);
-                feedRepository.saveAll(feedEntitiesToSave);
+                if (savedPostEntity.getVisible()) {
+                    var feedEntitiesToSave = generateFeedEntitiesToSave(savedPostEntity, userEntity);
+                    feedRepository.saveAll(feedEntitiesToSave);
+                }
             }
             case BRAND -> {
                 var brandEntity = brandRepository.findByIdOrThrowNotFound(post.getAuthorId());
@@ -58,12 +67,17 @@ public class PostServiceImpl implements PostService {
                         .brandAuthor(brandEntity)
                         .textContent(post.getTextContent())
                         .viewConditions(viewConditionModelMapper.toEntity(post.getViewConditions()))
+                        .publicationTime(
+                                Instant.ofEpochMilli(post.getPublicationTime().getValue()))
+                        .visible(post.getVisible())
                         .build();
                 var savedPostEntity = postRepository.save(toSavePostEntity);
                 brandEntity.getPosts().add(savedPostEntity);
                 brandRepository.save(brandEntity);
-                var feedEntitiesToSave = generateFeedEntitiesToSave(savedPostEntity, brandEntity);
-                feedRepository.saveAll(feedEntitiesToSave);
+                if (savedPostEntity.getVisible()) {
+                    var feedEntitiesToSave = generateFeedEntitiesToSave(savedPostEntity, brandEntity);
+                    feedRepository.saveAll(feedEntitiesToSave);
+                }
             }
         }
     }
@@ -73,13 +87,25 @@ public class PostServiceImpl implements PostService {
     public void update(Post post) {
         var initialPostEntity = postRepository.findByIdOrThrowNotFound(post.getId());
         initialPostEntity.setTextContent(post.getTextContent());
+        initialPostEntity.setVisible(post.getVisible());
+        initialPostEntity.setPublicationTime(
+                Instant.ofEpochMilli(post.getPublicationTime().getValue()));
         var initialViewConditions = initialPostEntity.getViewConditions();
         initialPostEntity.setViewConditions(viewConditionModelMapper.toEntity(post.getViewConditions()));
+        if (visibilityChangedToInvisible(initialPostEntity, post)) {
+            initialPostEntity.getFeeds().clear();
+        }
         var updatedPostEntity = postRepository.save(initialPostEntity);
-        updateVisibilityIfChanged(initialViewConditions, updatedPostEntity);
+        if (updatedPostEntity.getVisible()) {
+            updateFeedsOnViewConditionsChanged(initialViewConditions, updatedPostEntity);
+        }
     }
 
-    private void updateVisibilityIfChanged(
+    private boolean visibilityChangedToInvisible(PostEntity initialPostEntity, Post toUpdatePostModel) {
+        return !initialPostEntity.getVisible() && toUpdatePostModel.getVisible();
+    }
+
+    private void updateFeedsOnViewConditionsChanged(
             List<ViewConditionInfo> initialViewConditions, PostEntity updatedPostEntity) {
         var updatedViewConditions = updatedPostEntity.getViewConditions();
         if (initialViewConditions.equals(updatedViewConditions)) {
@@ -154,5 +180,27 @@ public class PostServiceImpl implements PostService {
                 .filteringFields(filteringFields)
                 .build();
         return searchService.search(searchRequest);
+    }
+
+    @Override
+    @Transactional
+    public void addToFeedsVisiblePosts() {
+        var postEntitiesToAdd = postRepository.findAllByPublicationTimeIsBeforeAndVisibleIsFalse(Instant.now());
+        postEntitiesToAdd.forEach(postEntity -> {
+            postEntity.setVisible(true);
+            postEntity.setPublicationTime(null);
+        });
+        var feedEntitiesToUpdate = postEntitiesToAdd.stream()
+                .map(postEntity -> switch (postEntity.getAuthorType()) {
+                    case USER -> generateFeedEntitiesToSave(postEntity, postEntity.getUserAuthor());
+                    case BRAND -> generateFeedEntitiesToSave(postEntity, postEntity.getBrandAuthor());
+                })
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+
+        var updatedPosts = postRepository.saveAll(postEntitiesToAdd);
+        var updatedFeeds = feedRepository.saveAll(feedEntitiesToUpdate);
+
+        log.info("Set visible {} posts, affected {} feeds", updatedPosts.size(), updatedFeeds.size());
     }
 }

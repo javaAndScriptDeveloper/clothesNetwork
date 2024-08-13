@@ -52,6 +52,12 @@ public class PostEntity {
     @ManyToMany(mappedBy = "posts", cascade = CascadeType.PERSIST)
     List<FeedEntity> feeds;
 
+    @Column(name = "publication_time")
+    Instant publicationTime;
+
+    @Column(name = "visible")
+    Boolean visible;
+
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "view_conditions")
     List<ViewConditionInfo> viewConditions;

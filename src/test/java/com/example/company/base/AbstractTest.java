@@ -20,11 +20,15 @@ public class AbstractTest {
             .overrideDefaultInitialization(false)
             .build();
 
-    protected String getRandomString() {
+    protected static String getRandomString() {
         return random.nextObject(String.class);
     }
 
-    protected <T extends Enum<T>> T getRandomEnumValue(Class<T> enumClass) {
+    protected static int getPositiveInteger() {
+        return random.nextInt(0, Integer.MAX_VALUE);
+    }
+
+    protected static <T extends Enum<T>> T getRandomEnumValue(Class<T> enumClass) {
         var enumValues = Arrays.stream(enumClass.getEnumConstants()).toList();
         if (enumValues.size() == 1) {
             return enumValues.get(0);

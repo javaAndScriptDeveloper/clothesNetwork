@@ -14,6 +14,11 @@ qr-code:
   width: 200
   height: 200
 
+job:
+  post-visibility:
+    initial-delay: 0
+    fixed-delay: 36000
+
 api:
   public-service-url: localhost:8080
   version: v1

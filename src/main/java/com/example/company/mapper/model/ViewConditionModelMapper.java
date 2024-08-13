@@ -1,7 +1,7 @@
 package com.example.company.mapper.model;
 
 import com.example.company.entity.info.ViewConditionInfo;
-import com.example.company.model.Post;
+import com.example.company.model.post.Post;
 import com.example.company.model.search.SearchRequest;
 import java.util.List;
 import org.mapstruct.Mapper;
