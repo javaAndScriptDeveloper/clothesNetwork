@@ -3,7 +3,7 @@ package com.example.company.service.impl;
 import com.example.company.exception.ApplicationException;
 import com.example.company.exception.notfound.FeedNotFoundException;
 import com.example.company.mapper.entity.PostEntityMapper;
-import com.example.company.model.Post;
+import com.example.company.model.post.Post;
 import com.example.company.repository.FeedRepository;
 import com.example.company.repository.PostRepository;
 import com.example.company.service.FeedService;

@@ -1,6 +1,8 @@
 package com.example.company.integration;
 
 import com.example.company.base.AbstractTest;
+import com.example.company.dto.request.CreatePostRequest;
+import com.example.company.dto.request.UpdatePostRequest;
 import com.example.company.entity.BrandEntity;
 import com.example.company.entity.FeedEntity;
 import com.example.company.entity.PostEntity;
@@ -9,6 +11,7 @@ import com.example.company.repository.*;
 import com.example.company.service.TransactionService;
 import com.example.company.utils.StringUtils;
 import io.github.glytching.junit.extension.random.RandomBeansExtension;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -95,7 +98,22 @@ public class AbstractIntegrationTest extends AbstractTest {
         postEntity.setFeeds(List.of());
         postEntity.setViewConditions(List.of());
         postEntity.setAuthorType(null);
+        postEntity.setVisible(true);
         return postEntity;
+    }
+
+    protected CreatePostRequest generateCreatePostRequest() {
+        var createPostRequest = random.nextObject(CreatePostRequest.class, "viewConditions");
+        createPostRequest.setVisible(true);
+        createPostRequest.getPublicationTime().setValue(Instant.now().toEpochMilli());
+        return createPostRequest;
+    }
+
+    protected UpdatePostRequest generateUpdatePostRequest() {
+        var updatePostRequest = random.nextObject(UpdatePostRequest.class, "viewConditions");
+        updatePostRequest.setVisible(true);
+        updatePostRequest.getPublicationTime().setValue(Instant.now().toEpochMilli());
+        return updatePostRequest;
     }
 
     protected String encodeCredentials(String username, String password) {

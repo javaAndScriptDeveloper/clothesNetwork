@@ -1,7 +1,8 @@
 package com.example.company.dto.request;
 
+import com.example.company.dto.post.PostPublicationTimeRequest;
+import com.example.company.dto.post.PostViewCondition;
 import com.example.company.enums.AuthorType;
-import com.example.company.enums.SearchOperator;
 import java.util.List;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -19,17 +20,9 @@ public class UpdatePostRequest {
 
     String textContent;
 
-    List<ViewConditionRequest> viewConditions;
+    Boolean visible;
 
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @FieldDefaults(level = AccessLevel.PRIVATE)
-    public static class ViewConditionRequest {
+    PostPublicationTimeRequest publicationTime;
 
-        String fieldName;
-        SearchOperator operator;
-        Object fieldValue;
-    }
+    List<PostViewCondition> viewConditions;
 }

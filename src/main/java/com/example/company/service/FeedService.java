@@ -1,6 +1,6 @@
 package com.example.company.service;
 
-import com.example.company.model.Post;
+import com.example.company.model.post.Post;
 import java.util.List;
 
 public interface FeedService {

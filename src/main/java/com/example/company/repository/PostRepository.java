@@ -2,6 +2,8 @@ package com.example.company.repository;
 
 import com.example.company.entity.PostEntity;
 import com.example.company.exception.notfound.PostNotFoundException;
+import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,4 +16,6 @@ public interface PostRepository extends JpaRepository<PostEntity, UUID> {
     }
 
     Page<PostEntity> findByFeedsId(UUID feedId, Pageable pageable);
+
+    List<PostEntity> findAllByPublicationTimeIsBeforeAndVisibleIsFalse(Instant threshold);
 }

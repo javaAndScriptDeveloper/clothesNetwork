@@ -15,7 +15,6 @@ import com.example.company.dto.request.CreateUserRequest;
 import com.example.company.dto.request.UpdateUserRequest;
 import com.example.company.dto.response.UserResponse;
 import com.example.company.entity.InviteEntity;
-import com.example.company.repository.*;
 import io.github.glytching.junit.extension.random.Random;
 import java.util.List;
 import java.util.UUID;

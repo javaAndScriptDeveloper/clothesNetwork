@@ -1,4 +1,4 @@
-package com.example.company.model;
+package com.example.company.model.post;
 
 import com.example.company.enums.AuthorType;
 import com.example.company.enums.SearchOperator;
@@ -15,6 +15,8 @@ public class Post {
     AuthorType authorType;
     Long authorId;
     String textContent;
+    Boolean visible;
+    PostPublicationTime publicationTime;
     List<ViewCondition> viewConditions;
 
     @Data

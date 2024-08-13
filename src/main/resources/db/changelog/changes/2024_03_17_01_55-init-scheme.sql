@@ -36,14 +36,16 @@ CREATE TABLE invites
 
 CREATE TABLE posts
 (
-    id              UUID PRIMARY KEY,
-    user_id         BIGINT    NULL,
-    brand_id        BIGINT    NULL,
-    author_type     VARCHAR   NOT NULL,
-    text_content    VARCHAR   NOT NULL,
-    created_at      TIMESTAMP NOT NULL,
-    updated_at      TIMESTAMP NOT NULL,
-    view_conditions JSONB     NULL,
+    id               UUID PRIMARY KEY,
+    user_id          BIGINT    NULL,
+    brand_id         BIGINT    NULL,
+    author_type      VARCHAR   NOT NULL,
+    text_content     VARCHAR   NOT NULL,
+    created_at       TIMESTAMP NOT NULL,
+    updated_at       TIMESTAMP NOT NULL,
+    visible          BOOLEAN   NOT NULL,
+    publication_time TIMESTAMP NULL,
+    view_conditions  JSONB     NULL,
     FOREIGN KEY (user_id) REFERENCES users (id),
     FOREIGN KEY (brand_id) REFERENCES brands (id)
 );
