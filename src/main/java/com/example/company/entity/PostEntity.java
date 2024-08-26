@@ -55,7 +55,10 @@ public class PostEntity {
     @Column(name = "publication_time")
     Instant publicationTime;
 
-    @Column(name = "visible")
+    @Column(name = "is_posted")
+    Boolean posted;
+
+    @Column(name = "is_visible")
     Boolean visible;
 
     @JdbcTypeCode(SqlTypes.JSON)

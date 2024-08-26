@@ -17,5 +17,5 @@ public interface PostRepository extends JpaRepository<PostEntity, UUID> {
 
     Page<PostEntity> findByFeedsId(UUID feedId, Pageable pageable);
 
-    List<PostEntity> findAllByPublicationTimeIsBeforeAndVisibleIsFalse(Instant threshold);
+    List<PostEntity> findAllByPublicationTimeIsBeforeAndPostedIsFalse(Instant threshold);
 }

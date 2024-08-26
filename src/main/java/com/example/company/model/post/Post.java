@@ -16,6 +16,7 @@ public class Post {
     Long authorId;
     String textContent;
     Boolean visible;
+    Boolean posted;
     PostPublicationTime publicationTime;
     List<ViewCondition> viewConditions;
 
