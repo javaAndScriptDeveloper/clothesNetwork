@@ -8,5 +8,5 @@ public interface PostService {
 
     void update(Post post);
 
-    void addToFeedsVisiblePosts();
+    void addToFeedsPostsWithPublicationTimeUp();
 }

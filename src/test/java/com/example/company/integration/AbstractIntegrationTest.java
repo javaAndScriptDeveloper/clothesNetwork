@@ -99,6 +99,7 @@ public class AbstractIntegrationTest extends AbstractTest {
         postEntity.setViewConditions(List.of());
         postEntity.setAuthorType(null);
         postEntity.setVisible(true);
+        postEntity.setPosted(true);
         return postEntity;
     }
 

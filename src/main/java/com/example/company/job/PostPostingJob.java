@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class PostVisibilityJob {
+public class PostPostingJob {
 
     private final PostService postService;
 
@@ -17,6 +17,6 @@ public class PostVisibilityJob {
             initialDelayString = "${job.post-visibility.initial-delay}",
             fixedDelayString = "${job.post-visibility.fixed-delay}")
     public void run() {
-        postService.addToFeedsVisiblePosts();
+        postService.addToFeedsPostsWithPublicationTimeUp();
     }
 }

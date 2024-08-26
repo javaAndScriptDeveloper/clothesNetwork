@@ -3,7 +3,7 @@ package com.example.company.integration;
 import static com.example.company.enums.AuthorType.USER;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.example.company.job.PostVisibilityJob;
+import com.example.company.job.PostPostingJob;
 import com.example.company.service.TransactionService;
 import java.time.Instant;
 import java.util.List;
@@ -11,10 +11,10 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class PostVisibilityJobIntegrationTest extends AbstractIntegrationTest {
+public class PostPostingJobIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
-    private PostVisibilityJob sut;
+    private PostPostingJob sut;
 
     @Autowired
     private TransactionService transactionService;
@@ -38,6 +38,7 @@ public class PostVisibilityJobIntegrationTest extends AbstractIntegrationTest {
                 .viewConditions(List.of())
                 .publicationTime(Instant.now().minusSeconds(getPositiveInteger()))
                 .visible(false)
+                .posted(false)
                 .build());
 
         // when
@@ -52,6 +53,7 @@ public class PostVisibilityJobIntegrationTest extends AbstractIntegrationTest {
 
         var updatedPost = postRepository.findAll().getFirst();
         assertTrue(updatedPost.getVisible());
+        assertTrue(updatedPost.getPosted());
         assertNull(updatedPost.getPublicationTime());
     }
 }

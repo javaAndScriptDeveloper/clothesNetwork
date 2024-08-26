@@ -25,6 +25,8 @@ public class PostResponse {
 
     Boolean visible;
 
+    Boolean posted;
+
     PostPublicationTimeRequest publicationTime;
 
     List<PostViewCondition> viewConditions;

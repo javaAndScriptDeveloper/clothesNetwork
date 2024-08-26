@@ -51,13 +51,26 @@ public class PostServiceImpl implements PostService {
                         .publicationTime(
                                 Instant.ofEpochMilli(post.getPublicationTime().getValue()))
                         .visible(post.getVisible())
+                        .posted(post.getPublicationTime() == null)
                         .build();
                 var savedPostEntity = postRepository.save(toSavePostEntity);
                 userEntity.getPosts().add(savedPostEntity);
                 userRepository.save(userEntity);
                 if (savedPostEntity.getVisible()) {
-                    var feedEntitiesToSave = generateFeedEntitiesToSave(savedPostEntity, userEntity);
+                    var feedEntitiesToSave = resolveFeedEntitiesToSave(savedPostEntity, userEntity);
                     feedRepository.saveAll(feedEntitiesToSave);
+                    log.info(
+                            "Saved post, affected {} feeds; postId: {}, authorId: {}, authorType: {}",
+                            feedEntitiesToSave.size(),
+                            savedPostEntity.getId(),
+                            savedPostEntity.getUserAuthor().getId(),
+                            AuthorType.USER);
+                } else {
+                    log.info(
+                            "Saved post, not visible; postId: {}, authorId: {}, authorType: {}",
+                            savedPostEntity.getId(),
+                            savedPostEntity.getUserAuthor().getId(),
+                            AuthorType.USER);
                 }
             }
             case BRAND -> {
@@ -70,13 +83,26 @@ public class PostServiceImpl implements PostService {
                         .publicationTime(
                                 Instant.ofEpochMilli(post.getPublicationTime().getValue()))
                         .visible(post.getVisible())
+                        .posted(post.getPublicationTime() == null)
                         .build();
                 var savedPostEntity = postRepository.save(toSavePostEntity);
                 brandEntity.getPosts().add(savedPostEntity);
                 brandRepository.save(brandEntity);
                 if (savedPostEntity.getVisible()) {
-                    var feedEntitiesToSave = generateFeedEntitiesToSave(savedPostEntity, brandEntity);
+                    var feedEntitiesToSave = resolveFeedEntitiesToSave(savedPostEntity, brandEntity);
                     feedRepository.saveAll(feedEntitiesToSave);
+                    log.info(
+                            "Saved post, affected {} feeds; postId: {}, authorId: {}, authorType: {}",
+                            feedEntitiesToSave.size(),
+                            savedPostEntity.getId(),
+                            savedPostEntity.getBrandAuthor().getId(),
+                            AuthorType.BRAND);
+                } else {
+                    log.info(
+                            "Saved post, not visible; postId: {}, authorId: {}, authorType: {}",
+                            savedPostEntity.getId(),
+                            savedPostEntity.getBrandAuthor().getId(),
+                            AuthorType.BRAND);
                 }
             }
         }
@@ -85,6 +111,11 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public void update(Post post) {
+        log.info(
+                "Starting post update; postId: {}, authorId: {}, authorType: {}",
+                post.getId(),
+                post.getAuthorId(),
+                post.getAuthorType());
         var initialPostEntity = postRepository.findByIdOrThrowNotFound(post.getId());
         initialPostEntity.setTextContent(post.getTextContent());
         initialPostEntity.setVisible(post.getVisible());
@@ -99,6 +130,7 @@ public class PostServiceImpl implements PostService {
         if (updatedPostEntity.getVisible()) {
             updateFeedsOnViewConditionsChanged(initialViewConditions, updatedPostEntity);
         }
+        log.info("Updated post; postId: {}", updatedPostEntity.getId());
     }
 
     private boolean visibilityChangedToInvisible(PostEntity initialPostEntity, Post toUpdatePostModel) {
@@ -109,6 +141,9 @@ public class PostServiceImpl implements PostService {
             List<ViewConditionInfo> initialViewConditions, PostEntity updatedPostEntity) {
         var updatedViewConditions = updatedPostEntity.getViewConditions();
         if (initialViewConditions.equals(updatedViewConditions)) {
+            log.info(
+                    "Skipped updating feeds: post view conditions has not changed; postId: {}",
+                    updatedPostEntity.getId());
             return;
         }
 
@@ -118,22 +153,30 @@ public class PostServiceImpl implements PostService {
         switch (updatedPostEntity.getAuthorType()) {
             case USER -> {
                 var userEntity = updatedPostEntity.getUserAuthor();
-                var feedEntitiesToSave = generateFeedEntitiesToSave(updatedPostEntity, userEntity);
+                var feedEntitiesToSave = resolveFeedEntitiesToSave(updatedPostEntity, userEntity);
                 var savedFeedEntities = feedRepository.saveAll(feedEntitiesToSave);
                 updatedPostEntity.getFeeds().addAll(savedFeedEntities);
                 postRepository.save(updatedPostEntity);
+                log.info(
+                        "Updated feeds for post, new feeds size: {}; postId: {}",
+                        savedFeedEntities.size(),
+                        updatedPostEntity.getId());
             }
             case BRAND -> {
                 var brandEntity = updatedPostEntity.getBrandAuthor();
-                var feedEntitiesToSave = generateFeedEntitiesToSave(updatedPostEntity, brandEntity);
+                var feedEntitiesToSave = resolveFeedEntitiesToSave(updatedPostEntity, brandEntity);
                 var savedFeedEntities = feedRepository.saveAll(feedEntitiesToSave);
                 updatedPostEntity.getFeeds().addAll(savedFeedEntities);
                 postRepository.save(updatedPostEntity);
+                log.info(
+                        "Updated feeds for post, new feeds size: {}; postId: {}",
+                        savedFeedEntities.size(),
+                        updatedPostEntity.getId());
             }
         }
     }
 
-    private List<FeedEntity> generateFeedEntitiesToSave(PostEntity postEntity, UserEntity userEntity) {
+    private List<FeedEntity> resolveFeedEntitiesToSave(PostEntity postEntity, UserEntity userEntity) {
         var usersForPost = postEntity.getViewConditions() == null
                 ? userEntity.getFollowers()
                 : findUsersForPost(postEntity, AuthorType.USER);
@@ -146,7 +189,7 @@ public class PostServiceImpl implements PostService {
                 .toList();
     }
 
-    private List<FeedEntity> generateFeedEntitiesToSave(PostEntity postEntity, BrandEntity brandEntity) {
+    private List<FeedEntity> resolveFeedEntitiesToSave(PostEntity postEntity, BrandEntity brandEntity) {
         var usersForPost = postEntity.getViewConditions() == null
                 ? brandEntity.getFollowers()
                 : findUsersForPost(postEntity, AuthorType.BRAND);
@@ -184,16 +227,17 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void addToFeedsVisiblePosts() {
-        var postEntitiesToAdd = postRepository.findAllByPublicationTimeIsBeforeAndVisibleIsFalse(Instant.now());
+    public void addToFeedsPostsWithPublicationTimeUp() {
+        var postEntitiesToAdd = postRepository.findAllByPublicationTimeIsBeforeAndPostedIsFalse(Instant.now());
         postEntitiesToAdd.forEach(postEntity -> {
             postEntity.setVisible(true);
+            postEntity.setPosted(true);
             postEntity.setPublicationTime(null);
         });
         var feedEntitiesToUpdate = postEntitiesToAdd.stream()
                 .map(postEntity -> switch (postEntity.getAuthorType()) {
-                    case USER -> generateFeedEntitiesToSave(postEntity, postEntity.getUserAuthor());
-                    case BRAND -> generateFeedEntitiesToSave(postEntity, postEntity.getBrandAuthor());
+                    case USER -> resolveFeedEntitiesToSave(postEntity, postEntity.getUserAuthor());
+                    case BRAND -> resolveFeedEntitiesToSave(postEntity, postEntity.getBrandAuthor());
                 })
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
@@ -201,6 +245,6 @@ public class PostServiceImpl implements PostService {
         var updatedPosts = postRepository.saveAll(postEntitiesToAdd);
         var updatedFeeds = feedRepository.saveAll(feedEntitiesToUpdate);
 
-        log.info("Set visible {} posts, affected {} feeds", updatedPosts.size(), updatedFeeds.size());
+        log.info("Posted {} posts, affected {} feeds", updatedPosts.size(), updatedFeeds.size());
     }
 }

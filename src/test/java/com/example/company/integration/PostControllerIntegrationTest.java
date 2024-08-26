@@ -4,8 +4,7 @@ import static com.example.company.config.ApplicationConfig.OBJECT_MAPPER;
 import static com.example.company.enums.AuthorType.BRAND;
 import static com.example.company.enums.AuthorType.USER;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -55,9 +54,18 @@ public class PostControllerIntegrationTest extends AbstractIntegrationTest {
 
         // then
         var savedPostEntity = postRepository.findAll().getFirst();
+        assertFalse(savedPostEntity.getPosted());
         assertThat(savedPostEntity)
                 .usingRecursiveComparison()
-                .ignoringFields("createdAt", "brandAuthor", "feeds", "id", "userAuthor", "updatedAt", "publicationTime")
+                .ignoringFields(
+                        "createdAt",
+                        "brandAuthor",
+                        "feeds",
+                        "id",
+                        "userAuthor",
+                        "updatedAt",
+                        "publicationTime",
+                        "posted")
                 .isEqualTo(createPostRequest);
         assertEquals(
                 Instant.ofEpochMilli(createPostRequest.getPublicationTime().getValue()),
@@ -104,7 +112,15 @@ public class PostControllerIntegrationTest extends AbstractIntegrationTest {
         var updatedPostEntity = postRepository.findAll().getFirst();
         assertThat(updatedPostEntity)
                 .usingRecursiveComparison()
-                .ignoringFields("createdAt", "brandAuthor", "feeds", "id", "userAuthor", "updatedAt", "publicationTime")
+                .ignoringFields(
+                        "createdAt",
+                        "brandAuthor",
+                        "feeds",
+                        "id",
+                        "userAuthor",
+                        "updatedAt",
+                        "publicationTime",
+                        "posted")
                 .isEqualTo(updatePostRequest);
 
         assertEquals(
