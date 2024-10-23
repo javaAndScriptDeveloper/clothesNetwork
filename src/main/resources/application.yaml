@@ -22,3 +22,6 @@ job:
 api:
   public-service-url: localhost:8080
   version: v1
+  s3:
+    accessKey: DO00BC8K6RV7ZED2PAJF
+    secretKey: aUnzAl7EQK4MkkRjdo29kdR6nWlWBHlwwfnHE/njWko
