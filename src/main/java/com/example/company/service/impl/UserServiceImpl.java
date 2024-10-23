@@ -9,10 +9,7 @@ import com.example.company.repository.UserRepository;
 import com.example.company.service.InviteService;
 import com.example.company.service.UserService;
 import jakarta.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +24,7 @@ public class UserServiceImpl implements UserService {
     private final BrandRepository brandRepository;
 
     @Override
-    public User findById(Long id) {
+    public User getById(Long id) {
         return userEntityMapper.toModel(userRepository.findByIdOrThrowNotFound(id));
     }
 
@@ -87,5 +84,14 @@ public class UserServiceImpl implements UserService {
         userEntity.getAffiliatedBrands().add(brandEntity);
         userEntity.getSubscribedBrands().add(brandEntity);
         userRepository.save(userEntity);
+    }
+
+    @Override
+    public void subscribe(Long subscriberId, Long toSubscribeId) {
+        var subscriberEntity = userRepository.findByIdOrThrowNotFound(subscriberId);
+        var toSubscribeEntity = userRepository.findByIdOrThrowNotFound(toSubscribeId);
+        subscriberEntity.getSubscribedUsers().add(toSubscribeEntity);
+        toSubscribeEntity.getFollowers().add(subscriberEntity);
+        userRepository.saveAll(Set.of(subscriberEntity, toSubscribeEntity));
     }
 }

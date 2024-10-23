@@ -1,5 +1,8 @@
 package com.example.company.integration;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+
 import com.example.company.base.AbstractTest;
 import com.example.company.dto.request.CreatePostRequest;
 import com.example.company.dto.request.UpdatePostRequest;
@@ -14,12 +17,15 @@ import io.github.glytching.junit.extension.random.RandomBeansExtension;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -81,8 +87,8 @@ public class AbstractIntegrationTest extends AbstractTest {
     }
 
     protected BrandEntity generateBrandEntity() {
-        var brandEntity =
-                random.nextObject(BrandEntity.class, "followers", "affiliatedUsers", "managingUsers", "posts");
+        var brandEntity = random.nextObject(
+                BrandEntity.class, "followers", "affiliatedUsers", "managingUsers", "posts", "profileImages");
         brandEntity.setEnabled(true);
         brandEntity.setAffiliatedUsers(Collections.emptyList());
         brandEntity.setFollowers(Collections.emptyList());
@@ -119,5 +125,13 @@ public class AbstractIntegrationTest extends AbstractTest {
 
     protected String encodeCredentials(String username, String password) {
         return BASIC_AUTH_SCHEME_NAME + " " + StringUtils.encodeBase64("%s:%s".formatted(username, password));
+    }
+
+    @SneakyThrows
+    protected <T> ResultActions executePostApiCall(String path, T requestBody) {
+        return mockMvc.perform(post(path)
+                        .content(StringUtils.toJson(requestBody))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(print());
     }
 }

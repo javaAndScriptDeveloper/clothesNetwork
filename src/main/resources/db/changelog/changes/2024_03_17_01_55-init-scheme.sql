@@ -8,19 +8,21 @@ CREATE TABLE users
     feed_id      UUID    NULL
 );
 
-CREATE TABLE images
-(
-    id      BIGSERIAL PRIMARY KEY,
-    data    OID    NOT NULL,
-    user_id BIGINT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users (id)
-);
-
 CREATE TABLE brands
 (
     id      BIGSERIAL PRIMARY KEY,
     name    VARCHAR NOT NULL,
     enabled BOOLEAN NOT NULL
+);
+
+CREATE TABLE images
+(
+    id      BIGSERIAL PRIMARY KEY,
+    data    OID    NOT NULL,
+    user_id BIGINT NULL,
+    brand_id BIGINT NULL,
+    FOREIGN KEY (user_id) REFERENCES users (id),
+    FOREIGN KEY (brand_id) REFERENCES brands (id)
 );
 
 CREATE TABLE invites

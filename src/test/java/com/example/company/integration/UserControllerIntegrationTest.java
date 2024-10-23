@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.example.company.dto.ImageDto;
 import com.example.company.dto.request.AddBrandRequest;
 import com.example.company.dto.request.CreateUserRequest;
+import com.example.company.dto.request.SubscribeToUserRequest;
 import com.example.company.dto.request.UpdateUserRequest;
 import com.example.company.dto.response.UserResponse;
 import com.example.company.entity.InviteEntity;
@@ -31,7 +32,7 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTest {
     @Test
     @WithMockUser
     @SneakyThrows
-    void whenFindUserById_ThenReturnsUser() {
+    void whenGetUserById_ThenReturnsUser() {
         // given
         var savedUserEntity = userRepository.save(generateUserEntity());
 
@@ -170,5 +171,31 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTest {
         assertTrue(updatedBrandEntity.getAffiliatedUsers().contains(updatedUser));
         assertTrue(updatedBrandEntity.getFollowers().contains(updatedUser));
          */
+    }
+
+    @Test
+    @SneakyThrows
+    @WithMockUser
+    @Transactional
+    void whenSubscribeToUser_ThenUserSubscribed() {
+        // given
+        var userEntitySubscriber = userRepository.save(generateUserEntity());
+        var userEntityToSubscribe = userRepository.save(generateUserEntity());
+
+        // when
+        var result = executePostApiCall(
+                "%s/%s/subscribe".formatted(USERS_ENTITY_URL, userEntitySubscriber.getId()),
+                SubscribeToUserRequest.builder()
+                        .userId(userEntityToSubscribe.getId())
+                        .build());
+
+        // then
+        result.andExpect(status().isOk());
+
+        var updatedUserSubscriber = userRepository.findByIdOrThrowNotFound(userEntitySubscriber.getId());
+        assertTrue(updatedUserSubscriber.getSubscribedUsers().contains(userEntityToSubscribe));
+
+        var updatedUserToSubscribe = userRepository.findByIdOrThrowNotFound(userEntityToSubscribe.getId());
+        assertTrue(updatedUserToSubscribe.getFollowers().contains(userEntitySubscriber));
     }
 }

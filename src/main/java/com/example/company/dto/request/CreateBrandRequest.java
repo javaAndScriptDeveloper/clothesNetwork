@@ -13,19 +13,14 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CreateUserRequest {
+public class CreateBrandRequest {
 
-    @NotBlank(message = "Username can not be empty")
-    String username;
+    @NotBlank(message = "Name can not be empty")
+    String name;
 
-    @NotBlank(message = "Phone number can not be empty")
-    String phoneNumber;
-
-    @NotBlank(message = "Password can not be empty")
-    String password;
-
-    @NotBlank(message = "Email can not be empty")
-    String email;
+    @NotNull(message = "Author id can not be null") Long authorId;
 
     @NotNull(message = "Profile images can not be null") List<@Valid ImageDto> profileImages;
+
+    @NotNull(message = "Enabled can not be null") Boolean enabled;
 }

@@ -23,6 +23,12 @@ public class ImageEntity {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     UserEntity user;
+
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @ManyToOne
+    @JoinColumn(name = "brand_id")
+    BrandEntity brand;
 }

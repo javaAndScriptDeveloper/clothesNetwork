@@ -1,0 +1,367 @@
+{
+	"info": {
+		"_postman_id": "65b6e375-f9b7-48ce-ae93-e61e2fcb8d1e",
+		"name": "clothesNetwork",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "16112617"
+	},
+	"item": [
+		{
+			"name": "posts",
+			"item": [
+				{
+					"name": "createPost",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{AUTH_HEADER_VALUE}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"authorType\": \"USER\",\n    \"authorId\": 1,\n    \"textContent\": \"some content\",\n    \"visible\": true,\n    \"publicationTime\": {\n        \"value\": 1729689506648\n    },\n    \"viewConditions\": []\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BE_URL}}/api/{{API_VERSION}}/posts",
+							"host": [
+								"{{BE_URL}}"
+							],
+							"path": [
+								"api",
+								"{{API_VERSION}}",
+								"posts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updatePost",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{AUTH_HEADER_VALUE}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"authorType\": \"USER\",\n    \"authorId\": 1,\n    \"textContent\": \"some new content\",\n    \"visible\": true,\n    \"publicationTime\": {\n        \"value\": 1829689506648\n    },\n    \"viewConditions\": []\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BE_URL}}/api/{{API_VERSION}}/posts/9a25d146-3d72-4ac1-9f59-5a347f12ba6c",
+							"host": [
+								"{{BE_URL}}"
+							],
+							"path": [
+								"api",
+								"{{API_VERSION}}",
+								"posts",
+								"9a25d146-3d72-4ac1-9f59-5a347f12ba6c"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "invites",
+			"item": [
+				{
+					"name": "createInvites",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{AUTH_HEADER_VALUE}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"inviteFormatType\": \"URL\", //URL, PDF_WITH_QR_CODES\n    \"size\": 4\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BE_URL}}/api/{{API_VERSION}}/invites",
+							"host": [
+								"{{BE_URL}}"
+							],
+							"path": [
+								"api",
+								"{{API_VERSION}}",
+								"invites"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "feeds",
+			"item": [
+				{
+					"name": "findPostsOfFeed",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{AUTH_HEADER_VALUE}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\" : 2,\n    \"startPosition\": 1,\n    \"step\" : 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BE_URL}}/api/{{API_VERSION}}/feeds",
+							"host": [
+								"{{BE_URL}}"
+							],
+							"path": [
+								"api",
+								"{{API_VERSION}}",
+								"feeds"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "findUser",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{AUTH_HEADER_VALUE}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BE_URL}}/api/{{API_VERSION}}/users/USER_ID",
+							"host": [
+								"{{BE_URL}}"
+							],
+							"path": [
+								"api",
+								"{{API_VERSION}}",
+								"users",
+								"USER_ID"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createUser",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{AUTH_HEADER_VALUE}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"some username\",\n    \"phoneNumber\": \"+ 044\",\n    \"password\": \"password\",\n    \"email\": \"some@email.com\",\n    \"profileImages\": []\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BE_URL}}/api/{{API_VERSION}}/users?secretCode=SOME_SECRET_CODE",
+							"host": [
+								"{{BE_URL}}"
+							],
+							"path": [
+								"api",
+								"{{API_VERSION}}",
+								"users"
+							],
+							"query": [
+								{
+									"key": "secretCode",
+									"value": "SOME_SECRET_CODE"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateUser",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{AUTH_HEADER_VALUE}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"some username\",\n    \"phoneNumber\": \"+ 044\",\n    \"password\": \"password pswd\",\n    \"email\": \"some@email.com\",\n    \"profileImages\": []\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BE_URL}}/api/{{API_VERSION}}/users/USER_ID",
+							"host": [
+								"{{BE_URL}}"
+							],
+							"path": [
+								"api",
+								"{{API_VERSION}}",
+								"users",
+								"USER_ID"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "addBrandToUser",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"brandId\": BRAND_ID\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BE_URL}}/api/{{API_VERSION}}/users/USER_ID/add-brand",
+							"host": [
+								"{{BE_URL}}"
+							],
+							"path": [
+								"api",
+								"{{API_VERSION}}",
+								"users",
+								"USER_ID",
+								"add-brand"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "subscribeToUser",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": USER_ID\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BE_URL}}/api/{{API_VERSION}}/users/USER_ID/subscribe",
+							"host": [
+								"{{BE_URL}}"
+							],
+							"path": [
+								"api",
+								"{{API_VERSION}}",
+								"users",
+								"USER_ID",
+								"subscribe"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "brands",
+			"item": [
+				{
+					"name": "createBrand",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{AUTH_HEADER_VALUE}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"some username\",\n    \"authorId\": SOME_USER_ID\n    \"enabled\": true,\n    \"profileImages\": []\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BE_URL}}/api/{{API_VERSION}}/brands",
+							"host": [
+								"{{BE_URL}}"
+							],
+							"path": [
+								"api",
+								"{{API_VERSION}}",
+								"brands"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

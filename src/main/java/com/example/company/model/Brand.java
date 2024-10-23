@@ -1,5 +1,6 @@
 package com.example.company.model;
 
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +13,11 @@ public class Brand {
 
     Long id;
 
+    Long authorId;
+
     String name;
 
     Boolean enabled;
+
+    List<Image> profileImages;
 }

@@ -1,5 +1,6 @@
 package com.example.company.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -10,6 +11,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ImageDto {
 
-    Long id;
-    byte[] data;
+    @NotNull(message = "Id can not be null") Long id;
+
+    @NotNull(message = "Data can not be null") byte[] data;
 }

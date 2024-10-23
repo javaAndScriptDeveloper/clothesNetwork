@@ -43,4 +43,9 @@ public class BrandEntity {
     @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "affiliatedBrands")
     List<UserEntity> affiliatedUsers;
+
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "brand", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    List<ImageEntity> profileImages;
 }

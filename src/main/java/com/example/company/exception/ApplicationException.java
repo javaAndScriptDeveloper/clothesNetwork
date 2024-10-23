@@ -4,6 +4,7 @@ import java.util.Optional;
 import lombok.*;
 import org.springframework.http.HttpStatus;
 
+@Getter
 @Builder
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)

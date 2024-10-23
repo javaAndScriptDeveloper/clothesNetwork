@@ -36,6 +36,7 @@ dependencies {
     implementation("com.google.zxing:javase:3.5.3")
     implementation("com.itextpdf:itextpdf:5.5.13.3")
     implementation("com.amazonaws:aws-java-sdk-s3:1.12.770")
+    implementation("org.hibernate.validator:hibernate-validator:8.0.1.Final")
 
     runtimeOnly ("org.postgresql:postgresql")
     testCompileOnly ("org.projectlombok:lombok:1.18.32")
